@@ -10,3 +10,4 @@ Pipfile
 virtual-env
 *.env
 /src/
+.idea/
