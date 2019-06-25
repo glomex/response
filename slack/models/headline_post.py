@@ -43,13 +43,15 @@ class HeadlinePost(models.Model):
         msg.add_block(Section(block_id="reporter", text=Text(f"🙋🏻‍♂️ Reporter: {user_reference(self.incident.reporter)}")))
         incident_lead_text = user_reference(self.incident.lead) if self.incident.lead else "-"
         msg.add_block(Section(block_id="lead", text=Text(f"👩‍🚒 Incident Lead: {incident_lead_text}")))
+        squad_text = self.incident.squad_text()
+        msg.add_block(Section(block_id="squad", text=Text(f":office: Squad: {squad_text}‍")))
 
         msg.add_block(Divider())
 
         # Add additional info
         msg.add_block(Section(block_id="status", text=Text(f"{self.incident.status_emoji()} Status: {self.incident.status_text().capitalize()}")))
-        severity_text = self.incident.severity_text().capitalize() if self.incident.severity_text() else "-"
-        msg.add_block(Section(block_id="severity", text=Text(f"{self.incident.severity_emoji()} Severity: {severity_text}")))
+        # severity_text = self.incident.severity_text()
+        # msg.add_block(Section(block_id="severity", text=Text(f":bar_chart: Severity: {severity_text}")))
 
         doc_url = urljoin(
             settings.SITE_URL,

@@ -3,7 +3,7 @@ from django.db import models
 
 
 class IncidentManager(models.Manager):
-    def create_incident(self, report, reporter, report_time, summary=None, impact=None, lead=None, severity=None):
+    def create_incident(self, report, reporter, report_time, summary=None, impact=None, squad=None, lead=None):
         incident = self.create(
             report=report,
             reporter=reporter,
@@ -11,8 +11,9 @@ class IncidentManager(models.Manager):
             start_time=report_time,
             summary=summary,
             impact=impact,
+            squad=squad,
             lead=lead,
-            severity=severity,
+            # severity=severity,
         )
         return incident
 
@@ -35,13 +36,22 @@ class Incident(models.Model):
     lead = models.CharField(max_length=50, blank=True, null=True, help_text="Who is leading?")
 
     # Severity
-    SEVERITIES = (
-        ('1', 'critical'),
-        ('2', 'major'),
-        ('3', 'minor'),
-        ('4', 'trivial'),
+    # SEVERITIES = (
+    #     ('CRIT', 'critical'),
+    #     ('MAJOR', 'major'),
+    #     ('MINOR', 'minor'),
+    #     ('TRIVIAL', 'trivial'),
+    # )
+    # severity = models.CharField(max_length=10, blank=True, null=True, choices=SEVERITIES)
+
+    SQUADS = (
+        ('CO', 'Content-owner'),
+        ('PB', 'Publisher'),
+        ('PM', 'Player-monetization'),
     )
-    severity = models.CharField(max_length=10, blank=True, null=True, choices=SEVERITIES)
+
+    squad = models.CharField(max_length=50, blank=True, null=True, choices=SQUADS)
+
 
     def __str__(self):
         return self.report
@@ -70,22 +80,28 @@ class Incident(models.Model):
     def is_closed(self):
         return True if self.end_time else False
 
-    def severity_text(self):
-        for sev_id, text in self.SEVERITIES:
-            if sev_id == self.severity:
-                return text
+    # def severity_text(self):
+    #     for sev_id, sev_name in self.SEVERITIES:
+    #         if sev_name == self.severity:
+    #             return sev_id
+    #     return None
+
+    def squad_text(self):
+        for squad_id, squad_name in self.SQUADS:
+            if squad_name == self.squad:
+                return squad_name
         return None
 
-    def severity_emoji(self):
-        if not self.severity:
-            return "☁️"
-
-        return {
-            "1": "⛈️",
-            "2": "🌧️",
-            "3": "🌦️",
-            "4": "🌤️"
-        }[self.severity]
+    # def severity_emoji(self):
+    #     if not self.severity:
+    #         return "☁️"
+    #
+    #     return {
+    #         "1": "⛈️",
+    #         "2": "🌧️",
+    #         "3": "🌦️",
+    #         "4": "🌤️"
+    #     }[self.severity]
 
     def status_text(self):
         return 'resolved' if self.is_closed() else 'live'

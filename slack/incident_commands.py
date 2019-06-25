@@ -31,12 +31,23 @@ def set_incident_lead(incident: Incident, user_id: str, message: str):
     return True, None
 
 
-@incident_command(['severity', 'sev'], helptext='Set the incident severity')
-def set_severity(incident: Incident, user_id: str, message: str):
-    for sev_id, sev_name in Incident.SEVERITIES:
-        # look for sev name (e.g. critical) or sev id (1)
-        if (sev_name in message) or (sev_id in message):
-            incident.severity = sev_id
+# @incident_command(['severity', 'sev'], helptext='Set the incident severity')
+# def set_severity(incident: Incident, user_id: str, message: str):
+#     for sev_id, sev_name in Incident.SEVERITIES:
+#         # look for sev name (e.g. critical) or sev id (1)
+#         if (sev_name in message) or (sev_id in message):
+#             incident.severity = sev_id
+#             incident.save()
+#             return True, None
+#
+#     return False, None
+
+
+@incident_command(['squad'], helptext='Set the squad')
+def set_squad(incident: Incident, user_id: str, message: str):
+    for squad_id, squad_name in Incident.SQUADS:
+        if (squad_name in message) or (squad_id in message):
+            incident.squad = squad_name
             incident.save()
             return True, None
 
@@ -53,11 +64,11 @@ def rename_incident(incident: Incident, user_id: str, message: str):
     return True, None
 
 
-@incident_command(['duration'], helptext='How long has this incident been running?')
-def set_severity(incident: Incident, user_id: str, message: str):
-    duration = incident.duration()
-
-    comms_channel = CommsChannel.objects.get(incident=incident)
-    comms_channel.post_in_channel(f"The incident has been running for {duration}")
-
-    return True, None
+# @incident_command(['duration'], helptext='How long has this incident been running?')
+# def set_severity(incident: Incident, user_id: str, message: str):
+#     duration = incident.duration()
+#
+#     comms_channel = CommsChannel.objects.get(incident=incident)
+#     comms_channel.post_in_channel(f"The incident has been running for {duration}")
+#
+#     return True, None

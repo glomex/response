@@ -15,7 +15,7 @@
         {% comment %} ----- Heading ----- {% endcomment %}
         <h1 class="mt-3" id="title"><a href="">Incident {{ incident.pk }}</a></h1>
         <div id="status"><strong class="{{ incident.status_text }} blink_me">{{ incident.status_text|upper }}</strong>
-        {% if incident.severity_text %}- {{ incident.severity_text|upper}} SEVERITY{% endif %}</div>
+        <!--{% if incident.severity_text %}- {{ incident.severity_text|upper}} SEVERITY{% endif %}--></div>
     </div>
 
     <div class="col-lg-12">
@@ -26,6 +26,7 @@
         <ul class="summary-data">
             {% if incident.impact %}<li><span>Impact:</span>{{ incident.impact|unslackify|markdown_filter|safe }}</li>{% endif %}
             <li><span>Reporter:</span>{{ incident.reporter|slack_id_to_fullname }}</li>
+            {% if incident.squad %}<li><span>Squad</span>{{ incident.squad }}</li>{% endif %}
             {% if incident.lead %}<li><span>Lead:</span>{{ incident.lead|slack_id_to_fullname }}</li>{% endif %}
 
             <li><span>Start Time:</span>{% if incident.start_time %}{{ incident.start_time }}{% endif %}</li>

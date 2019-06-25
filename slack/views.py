@@ -42,7 +42,8 @@ def slash_command(request):
             TextArea(label="Summary", name="summary", optional=True, placeholder="Can you share any more details?"),
             TextArea(label="Impact", name="impact", optional=True, placeholder="Who or what might be affected?", hint="Think about affected people, systems, and processes"),
             SelectFromUsers(label="Lead", name="lead", optional=True),
-            SelectWithOptions([(i, s.capitalize()) for i, s in Incident.SEVERITIES], label="Severity", name="severity", optional=True)
+            SelectWithOptions([(i, s) for i, s in Incident.SQUADS], label="Squad", name="squad",optional=True)
+            # SelectWithOptions([(i, s.capitalize()) for i, s in Incident.SEVERITIES], label="Severity", name="severity", optional=True)
         ]
     )
 

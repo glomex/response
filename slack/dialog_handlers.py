@@ -18,8 +18,9 @@ def report_incident(user_id: str, channel_id: str, submission: json, response_ur
     report = submission['report']
     summary = submission['summary']
     impact = submission['impact']
+    squad = submission['squad']
     lead = submission['lead']
-    severity = submission['severity']
+    # severity = submission['severity']
 
     Incident.objects.create_incident(
         report=report,
@@ -27,8 +28,9 @@ def report_incident(user_id: str, channel_id: str, submission: json, response_ur
         report_time=datetime.now(),
         summary=summary,
         impact=impact,
+        squad=squad,
         lead=lead,
-        severity=severity,
+        # severity=severity,
     )
 
     incidents_channel_ref = channel_reference(settings.INCIDENT_CHANNEL_ID)
@@ -41,8 +43,9 @@ def edit_incident(user_id: str, channel_id: str, submission: json, response_url:
     report = submission['report']
     summary = submission['summary']
     impact = submission['impact']
+    squad = submission['squad']
     lead = submission['lead']
-    severity = submission['severity']
+    # severity = submission['severity']
 
     try:
         incident = Incident.objects.get(pk=state)
@@ -52,8 +55,9 @@ def edit_incident(user_id: str, channel_id: str, submission: json, response_url:
         incident.report = report
         incident.summary = summary
         incident.impact = impact
+        incident.squad = squad
         incident.lead = lead
-        incident.severity = severity
+        # incident.severity = severity
         incident.save()
 
     except Incident.DoesNotExist:

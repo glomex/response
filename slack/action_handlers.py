@@ -53,7 +53,8 @@ def handle_edit_incident_button(ac: ActionContext):
             TextArea(label="Summary", name="summary", value=ac.incident.summary, optional=True, placeholder="Can you share any more details?"),
             TextArea(label="Impact", name="impact", value=ac.incident.impact, optional=True, placeholder="Who or what might be affected?", hint="Think about affected people, systems, and processes"),
             SelectFromUsers(label="Lead", name="lead", value=ac.incident.lead, optional=True),
-            SelectWithOptions([(i, s.capitalize()) for i, s in Incident.SEVERITIES], value=ac.incident.severity, label="Severity", name="severity", optional=True)
+            SelectWithOptions([(i, s) for i, s in Incident.SQUADS], label="Squad", name="squad", optional=True)
+            # SelectWithOptions([(i, s.capitalize()) for i, s in Incident.SEVERITIES], value=ac.incident.severity, label="Severity", name="severity", optional=True)
         ]
     )
 
