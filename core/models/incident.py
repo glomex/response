@@ -45,9 +45,11 @@ class Incident(models.Model):
     # severity = models.CharField(max_length=10, blank=True, null=True, choices=SEVERITIES)
 
     SQUADS = (
-        ('CO', 'Content-owner'),
-        ('PB', 'Publisher'),
-        ('PM', 'Player-monetization'),
+        ('CONTENT SQUAD', '@content-squad'),
+        ('PUBLISHER SQUAD', '@publisher-squad'),
+        ('PLAYER & MONETIZATION', '@player-monetz-squad'),
+        ('SRE SQUAD', '@sre'),
+        ('DATA SQUAD', '@data-squad')
     )
 
     squad = models.CharField(max_length=50, blank=True, null=True, choices=SQUADS)
