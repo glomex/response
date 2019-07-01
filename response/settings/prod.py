@@ -2,6 +2,8 @@ from .base import *
 
 SITE_URL =  os.environ.get("SITE_URL")
 
+DEBUG = False
+
 if os.environ.get("POSTGRES"):
     DATABASES = {
         'default': {
@@ -55,6 +57,7 @@ try:
     INCIDENT_CHANNEL_ID = get_channel_id(INCIDENT_CHANNEL_NAME, SLACK_TOKEN)
 except:
     INCIDENT_CHANNEL_ID = None
+
 
 PAGERDUTY_ENABLED = os.getenv("PAGERDUTY_ENABLED") in ("True", "\"True\"", "true", "\"true\"", True, 1)
 if PAGERDUTY_ENABLED:
