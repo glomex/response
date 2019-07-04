@@ -99,3 +99,28 @@ def set_action(incident: Incident, user_id: str, message: str):
     action_reporter = GetOrCreateSlackExternalUser(external_id=user_id, display_name=name)
     Action(incident=incident, details=message, user=action_reporter).save()
     return True, None
+
+
+@incident_command(['close'], helptext='Close this incident.')
+def close_incident(incident: Incident, user_id: str, message: str):
+    comms_channel = CommsChannel.objects.get(incident=incident)
+
+    if incident.is_closed():
+        comms_channel.post_in_channel(f"This incident was already closed at {incident.end_time.strftime('%Y-%m-%d %H:%M:%S')}")
+        return True, None
+
+    incident.end_time = datetime.now()
+    incident.save()
+
+    comms_channel.post_in_channel(f"This incident has been closed! 📖 -> 📕")
+
+    return True, None
+
+
+@incident_command(['action'], helptext='Log a follow up action')
+def set_action(incident: Incident, user_id: str, message: str):
+    comms_channel = CommsChannel.objects.get(incident=incident)
+    name = get_user_profile(user_id)['name']
+    action_reporter = GetOrCreateSlackExternalUser(external_id=user_id, display_name=name)
+    Action(incident=incident, details=message, user=action_reporter).save()
+    return True, None
