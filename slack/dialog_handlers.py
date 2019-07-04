@@ -59,19 +59,9 @@ def edit_incident(user_id: str, channel_id: str, submission: json, response_url:
     report = submission['report']
     summary = submission['summary']
     impact = submission['impact']
-<<<<<<< HEAD
     squad = submission['squad']
     lead_id = submission['lead']
     # severity = submission['severity']
-
-    lead = None
-    if lead_id:
-        lead_name = get_user_profile(lead_id)['name']
-        lead = GetOrCreateSlackExternalUser(external_id=lead_id, display_name=lead_name)
-=======
-    lead_id = submission['lead']
-    severity = submission['severity']
->>>>>>> e933d6793238c52f2e095c82bc6fee8bad152d88
 
     lead = None
     if lead_id:
