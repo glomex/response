@@ -109,3 +109,31 @@
   margin-block-end: 0;
   margin-right: 80px;
 }
+
+.pagination {
+    text-align: center;
+    margin-top: 1em;
+}
+
+.pagination-number {
+    padding: 0.5em 0.8em;
+    border-radius: 2px;
+    color: #fff;
+    background-color: #127BFF;
+}
+
+.pagination-number:hover, .pagination-current {
+    background-color: #9354AA;
+}
+
+.pagination-action {
+    margin: 0 0.1em;
+    display: inline-block;
+    padding: 0.5em 0.5em;
+    color: #B9B9B9;
+    font-size: 1.3em;
+}
+
+.pagination-action:hover, .pagination-previous, .pagination-next {
+    color: #000000;
+}

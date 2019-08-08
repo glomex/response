@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.http import HttpRequest, HttpResponse, Http404
 from django.template.defaulttags import register
+from django.core.paginator import Paginator
 
 from core.models import Incident
 from slack.models import PinnedMessage, UserStats
@@ -30,6 +31,10 @@ def incident_doc(request: HttpRequest, incident_id: str):
 
 def incident_list(request: HttpRequest):
     incident = Incident.objects.all()
+    paginator = Paginator(incident, 6)
+    page = request.GET.get('page')
+    incident = paginator.get_page(page)
+
     return render(request, template_name='incident_list.html', context={
         "incidents": incident,
     })

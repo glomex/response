@@ -13,14 +13,16 @@
 <div class="container-fluid">
     <div class="row">
         <div class="col-sm">
-        {% for incident in incidents %}
+            {% for incident in incidents %}
             {% if not incident.pk|divisibleby:"2" %}
             <div class="card my-2">
                 <div class="card-body">
                     {% if incident.is_closed %}
-                    <h5 class="card-title" style="font-size:18px">{{ incident.report }}<span class="ml-1 badge badge-pill badge-success">{{ incident.status_text }}</span></h5>
+                    <h5 class="card-title" style="font-size:18px">{{ incident.report }}<span
+                            class="ml-1 badge badge-pill badge-success">{{ incident.status_text }}</span></h5>
                     {% else %}
-                    <h5 class="card-title" style="font-size:18px">{{ incident.report }}<span class="ml-1 badge badge-pill badge-danger">{{ incident.status_text }}</span></h5>
+                    <h5 class="card-title" style="font-size:18px">{{ incident.report }}<span
+                            class="ml-1 badge badge-pill badge-danger">{{ incident.status_text }}</span></h5>
                     {% endif %}
                     <p class="card-text" style="font-size:13px"><b>Summary</b>: {{ incident.summary }}</p>
                     <p class="card-text" style="font-size:13px"><b>Impact</b>: {{ incident.impact }}</p>
@@ -29,21 +31,24 @@
                     {% if incident.is_closed %}
                     <p class="card-text" style="font-size:13px"><b>End time</b>: {{ incident.end_time }}</p>
                     {% endif %}
-                    <a href="http://incident-manager.dev.infra.glomex.cloud/incident/{{ incident.pk }}" class="btn btn-primary btn-sm mt-1" style="font-size:13px" target="_blank">GO</a>
+                    <a href="http://incident-manager.dev.infra.glomex.cloud/incident/{{ incident.pk }}"
+                       class="btn btn-primary btn-sm mt-1" style="font-size:13px" target="_blank">GO</a>
                 </div>
             </div>
             {% endif %}
-        {% endfor %}
+            {% endfor %}
         </div>
         <div class="col-sm">
-        {% for incident in incidents %}
+            {% for incident in incidents %}
             {% if incident.pk|divisibleby:"2" %}
             <div class="card my-2">
                 <div class="card-body">
                     {% if incident.is_closed %}
-                    <h5 class="card-title" style="font-size:18px">{{ incident.report }}<span class="ml-1 badge badge-pill badge-success">{{ incident.status_text }}</span></h5>
+                    <h5 class="card-title" style="font-size:18px">{{ incident.report }}<span
+                            class="ml-1 badge badge-pill badge-success">{{ incident.status_text }}</span></h5>
                     {% else %}
-                    <h5 class="card-title" style="font-size:18px">{{ incident.report }}<span class="ml-1 badge badge-pill badge-danger">{{ incident.status_text }}</span></h5>
+                    <h5 class="card-title" style="font-size:18px">{{ incident.report }}<span
+                            class="ml-1 badge badge-pill badge-danger">{{ incident.status_text }}</span></h5>
                     {% endif %}
                     <p class="card-text" style="font-size:13px"><b>Summary</b>: {{ incident.summary }}</p>
                     <p class="card-text" style="font-size:13px"><b>Impact</b>: {{ incident.impact }}</p>
@@ -52,12 +57,44 @@
                     {% if incident.is_closed %}
                     <p class="card-text" style="font-size:13px"><b>End time</b>: {{ incident.end_time }}</p>
                     {% endif %}
-                    <a href="http://incident-manager.dev.infra.glomex.cloud/incident/{{ incident.pk }}" class="btn btn-primary btn-sm mt-1" style="font-size:13px" target="_blank">GO</a>
+                    <a href="http://incident-manager.dev.infra.glomex.cloud/incident/{{ incident.pk }}"
+                       class="btn btn-primary btn-sm mt-1" style="font-size:13px" target="_blank">GO</a>
                 </div>
             </div>
             {% endif %}
-        {% endfor %}
+            {% endfor %}
         </div>
+    </div>
+    <div class="pagination">
+
+        {% if incidents.has_previous %}
+        <a class="pagination-action" href="?page=1">
+            <i class="fa fa-angle-double-left" aria-hidden="true"></i>
+        </a>
+        <a class="pagination-action" href="?page={{ incidents.previous_page_number }}">
+            <i class="fa fa-angle-left" aria-hidden="true"></i>
+        </a>
+        {% endif %}
+
+        {% for num in incidents.paginator.page_range %}
+
+        {% if incidents.number == num %}
+        <span class="pagination-number pagination-current">{{ num }}</span>
+        {% elif num > incidents.number|add:'-4' and num < incidents.number|add:'4' %}
+        <a class="pagination-number" href="?page={{ num }}">{{ num }}</a>
+        {% endif %}
+
+        {% endfor %}
+
+        {% if incidents.has_next %}
+        <a class="pagination-action" href="?page={{ incidents.next_page_number }}">
+            <i class="fa fa-angle-right" aria-hidden="true"></i>
+        </a>
+        <a class="pagination-action" href="?page={{ incidents.paginator.num_pages }}">
+            <i class="fa fa-angle-double-right" aria-hidden="true"></i>
+        </a>
+        {% endif %}
+
     </div>
 </div>
 
