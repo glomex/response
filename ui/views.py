@@ -30,7 +30,7 @@ def incident_doc(request: HttpRequest, incident_id: str):
 
 
 def incident_list(request: HttpRequest):
-    incident = Incident.objects.all()
+    incident = Incident.objects.all().order_by('-start_time')
     paginator = Paginator(incident, 6)
     page = request.GET.get('page')
     incident = paginator.get_page(page)
@@ -38,4 +38,3 @@ def incident_list(request: HttpRequest):
     return render(request, template_name='incident_list.html', context={
         "incidents": incident,
     })
-
