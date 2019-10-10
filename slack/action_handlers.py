@@ -16,10 +16,8 @@ from slack.decorators import action_handler, ActionContext
 def handle_close_incident(ac: ActionContext):
     ac.incident.end_time = datetime.now()
     ac.incident.save()
-    print("We try to delete comms_channel")
     if CommsChannel.objects.filter(incident=ac.incident).exists():
         comms_channel = CommsChannel.objects.filter(incident=ac.incident).first()
-        print("CommChannel", comms_channel)
         archive_channel(comms_channel.channel_id)
 
 @action_handler(HeadlinePost.CREATE_COMMS_CHANNEL_BUTTON)
