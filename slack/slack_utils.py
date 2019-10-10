@@ -81,6 +81,16 @@ def unarchive_channel(channel_id):
     if not response.get("ok", False):
         raise SlackError(f"Couldn't unarchive channel {channel_id} : {response['error']}")
 
+def archive_channel(channel_id):
+    response = slack_client.api_call(
+        "channels.archive",
+        channel=channel_id,
+    )
+
+    if not response.get("ok", False):
+        raise SlackError(f"Couldn't archive channel {channel_id} : {response['error']}")
+
+
 
 def get_or_create_channel(channel_name, auto_unarchive=False):
     try:

@@ -7,7 +7,7 @@ from core.models.incident import Incident
 from slack.settings import INCIDENT_EDIT_DIALOG
 from slack.dialog_builder import Dialog, Text, TextArea, SelectWithOptions, SelectFromUsers
 from slack.models import HeadlinePost, CommsChannel
-from slack.slack_utils import invite_user_to_channel, get_slack_token_owner, leave_channel
+from slack.slack_utils import invite_user_to_channel, get_slack_token_owner, leave_channel, archive_channel
 
 from slack.decorators import action_handler, ActionContext
 
@@ -16,7 +16,11 @@ from slack.decorators import action_handler, ActionContext
 def handle_close_incident(ac: ActionContext):
     ac.incident.end_time = datetime.now()
     ac.incident.save()
-
+    print("We try to delete comms_channel")
+    if CommsChannel.objects.filter(incident=ac.incident).exists():
+        comms_channel = CommsChannel.objects.filter(incident=ac.incident).first()
+        print("CommChannel", comms_channel)
+        archive_channel(comms_channel.channel_id)
 
 @action_handler(HeadlinePost.CREATE_COMMS_CHANNEL_BUTTON)
 def handle_create_comms_channel(ac: ActionContext):
