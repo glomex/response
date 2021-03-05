@@ -55,6 +55,7 @@ except:
 
 try:
     INCIDENT_CHANNEL_ID = get_channel_id(INCIDENT_CHANNEL_NAME, SLACK_TOKEN)
+    #INCIDENT_CHANNEL_ID = 'CJG7PDNP2'
 except:
     INCIDENT_CHANNEL_ID = None
 

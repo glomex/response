@@ -19,6 +19,7 @@ class CommsChannelManager(models.Manager):
         try:
             name = f"incident-{100+incident.pk}"
             channel_id = get_or_create_channel(name, auto_unarchive=True)
+            logger.error(channel_id)
         except SlackError as e:
             logger.error('Failed to create comms channel {e}')
 

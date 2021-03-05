@@ -4,6 +4,9 @@ from django.conf import settings
 
 from slugify import slugify
 from slackclient import SlackClient
+import logging
+logger = logging.getLogger(__name__)
+
 
 slack_token = settings.SLACK_TOKEN
 slack_client = SlackClient(slack_token)
@@ -30,39 +33,80 @@ def reference_to_id(value):
 
 
 def get_channel_id(channel_name, auto_unarchive=False):
-    response = slack_client.api_call(
-        "channels.list",
-        exclude_archived=False,
-        exclude_members=True,
-    )
-    if not response.get("ok", False):
-        raise SlackError(f"Failed to list channels : {response['error']}")
+    logger.info(f"Getting channel ID for {channel_name}")
+    logger.error(f"Getting channel ID for {channel_name}")
+    logger.error("get_channel_id")
+    logger.error(channel_name)
+    print("get_channel_id")
+    print(channel_name)
+    next_cursor = None
+    while next_cursor != "":
+        response = slack_client.api_call(
+            "conversations.list",
+            exclude_archived=not auto_unarchive,
+            exclude_members=True,
+            limit=800,
+            cursor=next_cursor,
+        )
 
-    for channel in response['channels']:
-        if channel['name'] == channel_name:
-            if channel['is_archived'] and auto_unarchive:
-                unarchive_channel(channel['id'])
+        # see if there's a next_cursor
+        try:
+            next_cursor = response["response_metadata"]["next_cursor"]
+            logger.info(f"get_channel_id - next_cursor == [{next_cursor}]")
+        except LookupError:
+            logger.error(
+                "get_channel_id - I guess checking next_cursor in response object didn't work."
+            )
 
-            return channel['id']
+        for channel in response["channels"]:
+            if channel["name"] == channel_name:
+                if channel["is_archived"] and auto_unarchive:
+                    unarchive_channel(channel["id"])
+                logger.error(channel["id"])
+                return channel["id"]
 
-    raise SlackError(f"Couldn't find id for channel {channel_name}")
+    raise SlackError(f"Channel '{name}' not found")
+    # response = slack_client.api_call(
+    #     "conversations.list",
+    #     exclude_archived=False,
+    #     exclude_members=True,
+    #     limit=1000
+    # )
+    # logger.error(response)
+    # print(response)
+    # if not response.get("ok", False):
+    #     raise SlackError(f"Failed to list channels : {response['error']}")
+    #
+    # for channel in response['channels']:
+    #     if channel['name'] == channel_name:
+    #         if channel['is_archived'] and auto_unarchive:
+    #             unarchive_channel(channel['id'])
+    #
+    #         return channel['id']
+    #
+    # raise SlackError(f"Couldn't find id for channel {channel_name}")
 
 
 def create_channel(channel_name):
+    logger.error("create_channel")
     response = slack_client.api_call(
-        "channels.create",
+        "conversations.create",
         name=channel_name,
     )
-
+    logger.error(response)
     if not response.get("ok", False):
         if response['error'] == 'name_taken':
+            logger.error("name taken")
             raise SlackError(f"Channel already taken {channel_name} : {response['error']}")
+        else:
+            logger.error("other error")
+    #raise SlackError(f"Response {response}")
 
     return response['channel']['id']
 
 def set_channel_topic(channel_id, channel_topic):
     response = slack_client.api_call(
-        "channels.setTopic",
+        "conversations.setTopic",
         channel=channel_id,
         topic=channel_topic
     )
@@ -73,17 +117,18 @@ def set_channel_topic(channel_id, channel_topic):
 
 
 def unarchive_channel(channel_id):
+    logger.error(f"Unarchive {channel_id}")
     response = slack_client.api_call(
-        "channels.unarchive",
+        "conversations.unarchive",
         channel=channel_id,
     )
-
+    logger.error(response)
     if not response.get("ok", False):
         raise SlackError(f"Couldn't unarchive channel {channel_id} : {response['error']}")
 
 def archive_channel(channel_id):
     response = slack_client.api_call(
-        "channels.archive",
+        "conversations.archive",
         channel=channel_id,
     )
 

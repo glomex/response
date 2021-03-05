@@ -8,7 +8,8 @@ from slack.models.comms_channel import CommsChannel
 
 from slack.block_kit import *
 from slack.slack_utils import user_reference, channel_reference
-
+import logging
+logger = logging.getLogger(__name__)
 
 class HeadlinePostManager(models.Manager):
     def create_headline_post(self, incident):
@@ -33,6 +34,7 @@ class HeadlinePost(models.Model):
 
     def update_in_slack(self):
         "Creates/updates the slack headline post with the latest incident info"
+        logger.error("Update in slack")
         msg = Message()
 
         # Set the fallback text so notifications look nice
@@ -83,8 +85,10 @@ class HeadlinePost(models.Model):
 
         # Post / update the slack message
         response = msg.send(settings.INCIDENT_CHANNEL_ID, self.message_ts)
-
+        logger.error(response)
+        logger.error(f"ChannelId is {settings.INCIDENT_CHANNEL_ID}")
         # Save the message ts identifier if not already set
         if not self.message_ts:
+
             self.message_ts = response['ts']
             self.save()
