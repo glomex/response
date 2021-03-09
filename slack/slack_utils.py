@@ -33,12 +33,6 @@ def reference_to_id(value):
 
 
 def get_channel_id(channel_name, auto_unarchive=False):
-    logger.info(f"Getting channel ID for {channel_name}")
-    logger.error(f"Getting channel ID for {channel_name}")
-    logger.error("get_channel_id")
-    logger.error(channel_name)
-    print("get_channel_id")
-    print(channel_name)
     next_cursor = None
     while next_cursor != "":
         response = slack_client.api_call(
@@ -62,29 +56,10 @@ def get_channel_id(channel_name, auto_unarchive=False):
             if channel["name"] == channel_name:
                 if channel["is_archived"] and auto_unarchive:
                     unarchive_channel(channel["id"])
-                logger.error(channel["id"])
+                #logger.error(channel["id"])
                 return channel["id"]
 
     raise SlackError(f"Channel '{name}' not found")
-    # response = slack_client.api_call(
-    #     "conversations.list",
-    #     exclude_archived=False,
-    #     exclude_members=True,
-    #     limit=1000
-    # )
-    # logger.error(response)
-    # print(response)
-    # if not response.get("ok", False):
-    #     raise SlackError(f"Failed to list channels : {response['error']}")
-    #
-    # for channel in response['channels']:
-    #     if channel['name'] == channel_name:
-    #         if channel['is_archived'] and auto_unarchive:
-    #             unarchive_channel(channel['id'])
-    #
-    #         return channel['id']
-    #
-    # raise SlackError(f"Couldn't find id for channel {channel_name}")
 
 
 def create_channel(channel_name):
@@ -93,15 +68,13 @@ def create_channel(channel_name):
         "conversations.create",
         name=channel_name,
     )
-    logger.error(response)
+    #logger.error(response)
     if not response.get("ok", False):
         if response['error'] == 'name_taken':
             logger.error("name taken")
             raise SlackError(f"Channel already taken {channel_name} : {response['error']}")
         else:
             logger.error("other error")
-    #raise SlackError(f"Response {response}")
-
     return response['channel']['id']
 
 def set_channel_topic(channel_id, channel_topic):
@@ -122,7 +95,6 @@ def unarchive_channel(channel_id):
         "conversations.unarchive",
         channel=channel_id,
     )
-    logger.error(response)
     if not response.get("ok", False):
         raise SlackError(f"Couldn't unarchive channel {channel_id} : {response['error']}")
 
@@ -201,8 +173,9 @@ def remove_reaction(reaction, channel_id, thread_ts):
 
 
 def invite_user_to_channel(user_id, channel_id):
+
     response = slack_client.api_call(
-        "channels.invite",
+        "conversations.invite",
         user=user_id,
         channel=channel_id
     )
@@ -225,7 +198,7 @@ def get_slack_token_owner():
 
 def leave_channel(channel_id):
     response = slack_client.api_call(
-        "channels.leave",
+        "conversations.leave",
         channel=channel_id
     )
     if not response.get("ok", False):
@@ -274,7 +247,7 @@ def rename_channel(channel_id, new_name):
     new_name = slugify(f"{prefix}{new_name}", max_length=21)
 
     response = slack_client.api_call(
-        "channels.rename",
+        "conversations.rename",
         channel=channel_id,
         name=new_name,
     )
