@@ -85,7 +85,6 @@ class HeadlinePost(models.Model):
 
         # Post / update the slack message
         response = msg.send(settings.INCIDENT_CHANNEL_ID, self.message_ts)
-        logger.error(response)
         logger.error(f"ChannelId is {settings.INCIDENT_CHANNEL_ID}")
         # Save the message ts identifier if not already set
         if not self.message_ts:

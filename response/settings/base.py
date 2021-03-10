@@ -202,8 +202,6 @@ def get_channel_id(channel_name, token):
             limit=999,
             cursor=next_cursor
         )
-        #logger.error(response)
-        # see if there's a next_cursor
         try:
             next_cursor = response["response_metadata"]["next_cursor"]
             logger.info(f"get_channel_id - next_cursor == [{next_cursor}]")
@@ -211,13 +209,11 @@ def get_channel_id(channel_name, token):
             logger.error(
                 "get_channel_id - I guess checking next_cursor in response object didn't work."
             )
-        #logger.error(response)
         for channel in response["channels"]:
             if channel["name"] == channel_name:
                 return channel["id"]
-    logger.error(f"Channel '{name}' not found")
     raise SlackError(f"Channel '{name}' not found")
-    
+
 def get_env_var(setting, warn_only=False):
     value = os.getenv(setting, None)
 

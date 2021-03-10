@@ -42,8 +42,6 @@ def get_channel_id(channel_name, auto_unarchive=False):
             limit=800,
             cursor=next_cursor,
         )
-
-        # see if there's a next_cursor
         try:
             next_cursor = response["response_metadata"]["next_cursor"]
             logger.info(f"get_channel_id - next_cursor == [{next_cursor}]")
@@ -56,7 +54,6 @@ def get_channel_id(channel_name, auto_unarchive=False):
             if channel["name"] == channel_name:
                 if channel["is_archived"] and auto_unarchive:
                     unarchive_channel(channel["id"])
-                #logger.error(channel["id"])
                 return channel["id"]
 
     raise SlackError(f"Channel '{name}' not found")
@@ -68,7 +65,6 @@ def create_channel(channel_name):
         "conversations.create",
         name=channel_name,
     )
-    #logger.error(response)
     if not response.get("ok", False):
         if response['error'] == 'name_taken':
             logger.error("name taken")
@@ -133,15 +129,14 @@ def send_message(channel_id, text, attachments=None, thread_ts=None):
 
     return response
 
-
 def send_ephemeral_message(channel_id, user_id, text, attachments=None):
     response = slack_client.api_call(
         "chat.postEphemeral",
-        as_user=False,
         channel=channel_id,
         text=text,
         user=user_id,
         attachments=attachments,
+        username="IncidentManager"
     )
     if not response.get("ok", False):
         raise SlackError('Failed to send ephemeral message to {} : {}'.format(user_id, response['error']))
@@ -159,7 +154,6 @@ def add_reaction(reaction, channel_id, thread_ts):
         if not response['error'] == 'already_reacted':
             raise SlackError('Failed to react with {} to message {} in thread {}: {}'.format(reaction, channel_id, thread_ts, response['error']))
 
-
 def remove_reaction(reaction, channel_id, thread_ts):
     response = slack_client.api_call(
         "reactions.remove",
@@ -173,10 +167,9 @@ def remove_reaction(reaction, channel_id, thread_ts):
 
 
 def invite_user_to_channel(user_id, channel_id):
-
     response = slack_client.api_call(
         "conversations.invite",
-        user=user_id,
+        users=[user_id],
         channel=channel_id
     )
 
