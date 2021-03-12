@@ -28,7 +28,6 @@ def slack_authenticate(f):
     def wrapper(*args, **kwargs):
         request = args[0]
         logger.error("authenticate")
-        logger.error(request)
         if len(args) < 1 or not type(args[0]) == WSGIRequest:
             logger.error("slack_authenticate annotation used with incorrect args or no args")
             raise ValueError
@@ -47,8 +46,6 @@ def authenticate(request):
 
     see: https://api.slack.com/docs/verifying-requests-from-slack
     '''
-    logger.error(f"Slack signing secret {slack_signing_secret}")
-    logger.error(f"Request {request}")
     if slack_signing_secret == '':
         logger.critical("Signing secret isn't defined")
         return False
@@ -67,9 +64,6 @@ def authenticate(request):
         return False
 
     req_signature = request.META['HTTP_X_SLACK_SIGNATURE']
-    # logger.error(f"request {request.path}")
-    # logger.error(f"dir of request {dir(request)}")
-    # logger.error(f"Signature {req_signature}")
     if not verify_signature(req_timestamp, req_signature, slack_signing_secret, request.body):
         logger.error("Invalid request signature")
         if(request.path == '/slack/event'):
@@ -84,12 +78,9 @@ def verify_signature(timestamp, signature, secret,  data):
     # Generate a new hash using the app's signing secret and request data
 
     # Compare the generated hash and incoming request signature
-    logger.error(f"Data in verify {data}")
     req = str.encode('v0:' + str(timestamp) + ':') + data
     request_hash = 'v0=' + hmac.new(
         str.encode(secret),
         req, hashlib.sha256
     ).hexdigest()
-    logger.error(f"Signature {signature}, request hash {request_hash}")
     return hmac.compare_digest(request_hash, signature)
-    #return True
