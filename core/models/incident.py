@@ -1,6 +1,6 @@
 from datetime import datetime
 from django.db import models
-
+from core.models.user_external import ExternalUser
 
 class IncidentManager(models.Manager):
     def create_incident(self, report, reporter, report_time, summary=None, impact=None, squad=None, lead=None):
@@ -24,7 +24,7 @@ class Incident(models.Model):
 
     # Reporting info
     report = models.CharField(max_length=200)
-    reporter = models.CharField(max_length=50, default="")
+    reporter = models.ForeignKey(ExternalUser, related_name='reporter', on_delete=models.PROTECT, blank=False, null=True,)
     report_time = models.DateTimeField()
 
     start_time = models.DateTimeField(null=False)
@@ -33,7 +33,8 @@ class Incident(models.Model):
     # Additional info
     summary = models.TextField(blank=True, null=True, help_text="What's the high level summary?")
     impact = models.TextField(blank=True, null=True, help_text="What impact is this having?")
-    lead = models.CharField(max_length=50, blank=True, null=True, help_text="Who is leading?")
+    lead = models.ForeignKey(ExternalUser, related_name='lead', on_delete=models.PROTECT, blank=True, null=True, help_text="Who is leading?")
+
 
     # Severity
     # SEVERITIES = (
