@@ -27,6 +27,7 @@ def slack_authenticate(f):
     @wraps(f)
     def wrapper(*args, **kwargs):
         request = args[0]
+        logger.error("authenticate")
         if len(args) < 1 or not type(args[0]) == WSGIRequest:
             logger.error("slack_authenticate annotation used with incorrect args or no args")
             raise ValueError
