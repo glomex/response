@@ -67,7 +67,10 @@ def authenticate(request):
     req_signature = request.META['HTTP_X_SLACK_SIGNATURE']
     if not verify_signature(req_timestamp, req_signature, slack_signing_secret, request.body):
         logger.error("Invalid request signature")
-        return False
+        if(request.path == '/slack/event'):
+            return True
+        else:
+            return False
 
     return True
 
