@@ -4,10 +4,10 @@ from datetime import datetime
 from django.conf import settings
 
 from slack.settings import INCIDENT_EDIT_DIALOG, INCIDENT_REPORT_DIALOG
-from core.models.incident import Incident
+from core.models.incident import Incident, ExternalUser
 from slack.models import HeadlinePost, CommsChannel
 from slack.decorators import dialog_handler
-from slack.slack_utils import send_ephemeral_message, channel_reference
+from slack.slack_utils import send_ephemeral_message, channel_reference, get_user_profile, GetOrCreateSlackExternalUser
 
 import logging
 logger = logging.getLogger(__name__)
@@ -19,12 +19,28 @@ def report_incident(user_id: str, channel_id: str, submission: json, response_ur
     summary = submission['summary']
     impact = submission['impact']
     squad = submission['squad']
-    lead = submission['lead']
+    lead_id = submission['lead']
     # severity = submission['severity']
+
+    name = get_user_profile(user_id)['name']
+    reporter = GetOrCreateSlackExternalUser(external_id=user_id, display_name=name)
+
+    lead = None
+    if lead_id:
+        lead_name = get_user_profile(lead_id)['name']
+        lead = GetOrCreateSlackExternalUser(external_id=lead_id, display_name=lead_name)
+
+    name = get_user_profile(user_id)['name']
+    reporter = GetOrCreateSlackExternalUser(external_id=user_id, display_name=name)
+
+    lead = None
+    if lead_id:
+        lead_name = get_user_profile(lead_id)['name']
+        lead = GetOrCreateSlackExternalUser(external_id=lead_id, display_name=lead_name)
 
     Incident.objects.create_incident(
         report=report,
-        reporter=user_id,
+        reporter=reporter,
         report_time=datetime.now(),
         summary=summary,
         impact=impact,
@@ -44,8 +60,13 @@ def edit_incident(user_id: str, channel_id: str, submission: json, response_url:
     summary = submission['summary']
     impact = submission['impact']
     squad = submission['squad']
-    lead = submission['lead']
+    lead_id = submission['lead']
     # severity = submission['severity']
+
+    lead = None
+    if lead_id:
+        lead_name = get_user_profile(lead_id)['name']
+        lead = GetOrCreateSlackExternalUser(external_id=lead_id, display_name=lead_name)
 
     try:
         incident = Incident.objects.get(pk=state)
